@@ -4,6 +4,7 @@ import { RouterProvider } from 'react-router/dom';
 
 import { client } from '@/js/api/client.gen';
 import { AuthProvider } from '@/js/contexts/AuthContext';
+import { ThemeProvider } from '@/js/contexts/ThemeContext';
 import { ToastProvider } from '@/js/hooks/use-toast';
 import { Toaster } from '@/js/components/Toaster';
 import router from '@/js/routes';
@@ -18,10 +19,12 @@ client.instance.interceptors.request.use((request) => {
 
 const App = () => (
   <Sentry.ErrorBoundary fallback={<p>An error has occurred</p>}>
-    <ToastProvider>
-      <RouterProvider router={router} />
-      <Toaster />
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </ToastProvider>
+    </ThemeProvider>
   </Sentry.ErrorBoundary>
 );
 
