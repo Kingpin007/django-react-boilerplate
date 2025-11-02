@@ -1,0 +1,13 @@
+[2025-11-02T07:41:26.466Z] Error: Error opening file "/Users/anirudhkanabar/Projects/django-react-boilerplate/backend/schema.yml" 
+ENOENT: no such file or directory, open '/Users/anirudhkanabar/Projects/django-react-boilerplate/backend/schema.yml'
+Stack:
+ResolverError: Error opening file "/Users/anirudhkanabar/Projects/django-react-boilerplate/backend/schema.yml" 
+ENOENT: no such file or directory, open '/Users/anirudhkanabar/Projects/django-react-boilerplate/backend/schema.yml'
+    at Object.handler (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.0/node_modules/@hey-api/json-schema-ref-parser/dist/lib/resolvers/file.js:58:19)
+    at async $RefParser.parse (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.0/node_modules/@hey-api/json-schema-ref-parser/dist/lib/index.js:225:17)
+    at async $RefParser.bundle (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.0/node_modules/@hey-api/json-schema-ref-parser/dist/lib/index.js:132:9)
+    at async na (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+openapi-ts@0.85.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:47:9979)
+    at async /Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+openapi-ts@0.85.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:1352:6888
+    at async Promise.all (index 0)
+    at async LH (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+openapi-ts@0.85.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/index.cjs:1352:6835)
+    at async start (/Users/anirudhkanabar/Projects/django-react-boilerplate/node_modules/.pnpm/@hey-api+openapi-ts@0.85.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/bin/index.cjs:132:21)

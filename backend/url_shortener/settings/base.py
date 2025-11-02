@@ -17,8 +17,6 @@ DEBUG = True
 
 ADMINS = (("Admin", "foo@example.com"),)
 
-AUTH_USER_MODEL = "users.User"
-
 ALLOWED_HOSTS = []
 
 DATABASES = {
@@ -32,6 +30,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "django_js_reverse",
     "webpack_loader",
     "import_export",
@@ -39,8 +38,11 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "defender",
     "django_guid",
+    # django-allauth
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "common",
-    "users",
 ]
 
 MIDDLEWARE = [
@@ -57,9 +59,10 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     "defender.middleware.FailedLoginMiddleware",
     "django_guid.middleware.guid_middleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
-ROOT_URLCONF = "{{project_name}}.urls"
+ROOT_URLCONF = "url_shortener.urls"
 
 TEMPLATES = [
     {
@@ -87,7 +90,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "{{project_name}}.wsgi.application"
+WSGI_APPLICATION = "url_shortener.wsgi.application"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -251,3 +254,20 @@ DEFENDER_LOGIN_FAILURE_LIMIT = 3
 DEFENDER_COOLOFF_TIME = 300  # 5 minutes
 DEFENDER_LOCKOUT_TEMPLATE = "defender/lockout.html"
 DEFENDER_REDIS_URL = config("REDIS_URL")
+
+# django-allauth configuration
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by email
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# allauth settings
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = "none"  # Change to "mandatory" in production
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SESSION_REMEMBER = True
+LOGIN_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"

@@ -16,10 +16,10 @@ backend_format:
 
 # Commands for Docker version
 docker_setup:
-	docker volume create {{project_name}}_dbdata
+	docker volume create url_shortener_dbdata
 	docker compose build --no-cache backend frontend
 	docker compose run --rm backend python manage.py spectacular --color --file schema.yml
-	docker compose run --rm frontend pnpm run openapi-ts
+	docker compose run --rm frontend bun run openapi-ts
 
 docker_test:
 	docker compose run --rm backend python manage.py test $(ARG) --parallel --keepdb
@@ -56,4 +56,4 @@ docker_frontend_shell:
 	docker compose run --rm frontend sh
 
 docker_frontend_update_api:
-	docker compose run --rm frontend pnpm run openapi-ts
+	docker compose run --rm frontend bun run openapi-ts

@@ -9,12 +9,11 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from rest_framework.routers import DefaultRouter
-from users.routes import routes as users_routes
 
 
 router = DefaultRouter()
 
-routes = common_routes + users_routes
+routes = common_routes
 for route in routes:
     router.register(route["regex"], route["viewset"], basename=route["basename"])
 
@@ -23,6 +22,8 @@ urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("admin/defender/", include("defender.urls")),
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
+    # django-allauth URLs
+    path("accounts/", include("allauth.urls")),
     path("api/", include(router.urls), name="api"),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

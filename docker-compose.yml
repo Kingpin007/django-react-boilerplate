@@ -2,9 +2,9 @@ services:
   db:
     image: "postgres:alpine"
     environment:
-      - POSTGRES_USER={{project_name}}
+      - POSTGRES_USER={{url_shortener}}
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB={{project_name}}
+      - POSTGRES_DB={{url_shortener}}
     ports:
       - "5432"
     volumes:
@@ -47,7 +47,7 @@ services:
     build:
       dockerfile: backend/Dockerfile
       context: .
-    command: celery --app={{project_name}} worker --loglevel=info
+    command: celery --app={{url_shortener}} worker --loglevel=info
     volumes:
       - ./:/home/user/app/
     env_file: backend/.env
@@ -64,5 +64,5 @@ services:
 
 volumes:
   dbdata:
-    name: {{project_name}}_dbdata
+    name: {{url_shortener}}_dbdata
     external: true

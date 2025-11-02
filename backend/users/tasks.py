@@ -1,6 +1,6 @@
 from django.core import management
 
-from {{project_name}} import celery_app
+from url_shortener import celery_app
 
 
 @celery_app.task
