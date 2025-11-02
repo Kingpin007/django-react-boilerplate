@@ -73,14 +73,5 @@ class ShortURL(IndexedTimeStampedModel):
     @property
     def short_url(self):
         """Get the full short URL."""
-        from django.contrib.sites.models import Site
-        
-        try:
-            site = Site.objects.get_current()
-            domain = site.domain
-        except Site.DoesNotExist:
-            domain = "localhost:8000"
-        
-        protocol = "https" if not settings.DEBUG else "http"
-        return f"{protocol}://{domain}/{self.short_code}"
+        return f"http://localhost:8000/{self.short_code}"
 

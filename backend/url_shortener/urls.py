@@ -26,8 +26,6 @@ urlpatterns = [
     path("jsreverse/", django_js_reverse.views.urls_js, name="js_reverse"),
     # django-allauth URLs
     path("accounts/", include("allauth.urls")),
-    # Short URL redirect (must be before api/ to catch short codes)
-    path("<str:short_code>/", redirect_view, name="short-url-redirect"),
     path("api/", include(router.urls), name="api"),
     # drf-spectacular
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -41,4 +39,6 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    # Short URL redirect (must be LAST to avoid catching frontend routes)
+    path("<str:short_code>/", redirect_view, name="short-url-redirect"),
 ]

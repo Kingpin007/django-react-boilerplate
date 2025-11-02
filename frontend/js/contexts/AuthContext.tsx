@@ -58,55 +58,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (username: string, password: string) => {
-    const formData = new FormData();
-    formData.append('login', username);
-    formData.append('password', password);
-
-    const response = await fetch('/accounts/login/', {
+    const response = await fetch('/api/auth/login/', {
       method: 'POST',
-      body: formData,
-      credentials: 'include',
       headers: {
+        'Content-Type': 'application/json',
         'X-CSRFToken': getCookie('csrftoken') || '',
       },
+      body: JSON.stringify({ username, password }),
+      credentials: 'include',
     });
 
-    if (response.ok || response.redirected) {
-      await checkAuth();
-      navigate('/');
+    if (response.ok) {
+      const data = await response.json();
+      setUser(data.user);
     } else {
-      const error = await response.text();
-      throw new Error(error || 'Login failed');
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
     }
   };
 
   const signup = async (username: string, email: string, password1: string, password2: string) => {
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('email', email);
-    formData.append('password1', password1);
-    formData.append('password2', password2);
-
-    const response = await fetch('/accounts/signup/', {
+    const response = await fetch('/api/auth/signup/', {
       method: 'POST',
-      body: formData,
-      credentials: 'include',
       headers: {
+        'Content-Type': 'application/json',
         'X-CSRFToken': getCookie('csrftoken') || '',
       },
+      body: JSON.stringify({ username, email, password1, password2 }),
+      credentials: 'include',
     });
 
-    if (response.ok || response.redirected) {
-      await checkAuth();
-      navigate('/');
+    if (response.ok) {
+      const data = await response.json();
+      // Don't auto-login, let user go to login page
+      return;
     } else {
-      const error = await response.text();
-      throw new Error(error || 'Signup failed');
+      const errorData = await response.json();
+      const errorMessages: string[] = [];
+      Object.values(errorData).forEach((errors) => {
+        if (Array.isArray(errors)) {
+          errorMessages.push(...errors);
+        } else if (typeof errors === 'string') {
+          errorMessages.push(errors);
+        }
+      });
+      throw new Error(errorMessages.join(' ') || 'Signup failed');
     }
   };
 
   const logout = async () => {
-    const response = await fetch('/accounts/logout/', {
+    const response = await fetch('/api/auth/logout/', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       },
     });
 
-    if (response.ok || response.redirected) {
+    if (response.ok) {
       setUser(null);
       navigate('/');
     }
