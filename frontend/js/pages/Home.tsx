@@ -6,62 +6,45 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/js/
 import { Input } from '@/js/components/ui/input';
 import { Label } from '@/js/components/ui/label';
 import { useToast } from '@/js/hooks/use-toast';
-
-interface ShortURL {
-  id: number;
-  original_url: string;
-  short_code: string;
-  short_url: string;
-  click_count: number;
-  created: string;
-}
+import { useCreateShortUrl } from '@/js/hooks/api';
+import type { ShortURL } from '@/js/hooks/api';
 
 export default function Home() {
   const { user } = useAuth();
   const [url, setUrl] = useState('');
   const [customCode, setCustomCode] = useState('');
   const [shortUrl, setShortUrl] = useState<ShortURL | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const { toast } = useToast();
+
+  const createShortUrl = useCreateShortUrl();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/short-urls/shorten/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie('csrftoken') || '',
+    createShortUrl.mutate(
+      {
+        original_url: url,
+        custom_code: customCode || undefined,
+      },
+      {
+        onSuccess: (data) => {
+          setShortUrl(data);
+          setUrl('');
+          setCustomCode('');
+          toast({
+            title: 'Success!',
+            description: 'URL shortened successfully',
+          });
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          original_url: url,
-          custom_code: customCode || undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.detail || Object.values(data).flat().join(', ') || 'Failed to shorten URL');
+        onError: (error) => {
+          toast({
+            title: 'Error',
+            description: error instanceof Error ? error.message : 'Failed to shorten URL',
+            variant: 'destructive',
+          });
+        },
       }
-
-      const data = await response.json();
-      setShortUrl(data);
-      setUrl('');
-      setCustomCode('');
-      toast({
-        title: 'Success!',
-        description: 'URL shortened successfully',
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to shorten URL');
-    } finally {
-      setIsLoading(false);
-    }
+    );
   };
 
   const copyToClipboard = async (text: string) => {
@@ -96,8 +79,10 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+            {createShortUrl.isError && (
+              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                {createShortUrl.error instanceof Error ? createShortUrl.error.message : 'Failed to shorten URL'}
+              </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="url">Long URL</Label>
@@ -109,11 +94,11 @@ export default function Home() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   required
-                  disabled={isLoading}
+                  disabled={createShortUrl.isPending}
                   className="flex-1"
                 />
-                <Button type="submit" disabled={isLoading || !url}>
-                  {isLoading ? (
+                <Button type="submit" disabled={createShortUrl.isPending || !url}>
+                  {createShortUrl.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Shortening...
@@ -135,7 +120,7 @@ export default function Home() {
                 placeholder="my-custom-link"
                 value={customCode}
                 onChange={(e) => setCustomCode(e.target.value)}
-                disabled={isLoading}
+                disabled={createShortUrl.isPending}
                 pattern="[A-Za-z0-9]+"
                 title="Only letters and numbers allowed"
               />
@@ -182,11 +167,4 @@ export default function Home() {
       </Card>
     </div>
   );
-}
-
-function getCookie(name: string): string | null {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
 }

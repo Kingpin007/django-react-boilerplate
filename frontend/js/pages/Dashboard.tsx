@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Copy, ExternalLink, Link2, Trash2, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/js/contexts/AuthContext';
 import { Button } from '@/js/components/ui/button';
@@ -13,48 +12,16 @@ import {
 } from '@/js/components/ui/table';
 import { useToast } from '@/js/hooks/use-toast';
 import { format } from 'date-fns';
-
-interface ShortURL {
-  id: number;
-  original_url: string;
-  short_code: string;
-  short_url: string;
-  click_count: number;
-  created: string;
-  modified: string;
-}
+import { useShortUrls, useDeleteShortUrl } from '@/js/hooks/api';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [urls, setUrls] = useState<ShortURL[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
   const { toast } = useToast();
 
-  const fetchUrls = async () => {
-    try {
-      const response = await fetch('/api/short-urls/', {
-        credentials: 'include',
-      });
+  const { data, isLoading, error, refetch } = useShortUrls();
+  const deleteShortUrl = useDeleteShortUrl();
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch URLs');
-      }
-
-      const data = await response.json();
-      setUrls(data.results || data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load URLs');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchUrls();
-    }
-  }, [user]);
+  const urls = data?.results || [];
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -72,34 +39,24 @@ export default function Dashboard() {
     }
   };
 
-  const deleteUrl = async (id: number) => {
+  const deleteUrl = (id: number) => {
     if (!confirm('Are you sure you want to delete this URL?')) return;
 
-    try {
-      const response = await fetch(`/api/short-urls/${id}/`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'X-CSRFToken': getCookie('csrftoken') || '',
-        },
-      });
-
-      if (response.ok) {
-        setUrls(urls.filter((url) => url.id !== id));
+    deleteShortUrl.mutate(id, {
+      onSuccess: () => {
         toast({
           title: 'Deleted',
           description: 'URL deleted successfully',
         });
-      } else {
-        throw new Error('Failed to delete URL');
-      }
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete URL',
-        variant: 'destructive',
-      });
-    }
+      },
+      onError: () => {
+        toast({
+          title: 'Error',
+          description: 'Failed to delete URL',
+          variant: 'destructive',
+        });
+      },
+    });
   };
 
   if (!user) {
@@ -122,7 +79,7 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight">My URLs</h1>
           <p className="text-muted-foreground">Manage all your shortened URLs</p>
         </div>
-        <Button onClick={fetchUrls} variant="outline" disabled={isLoading}>
+        <Button onClick={() => refetch()} variant="outline" disabled={isLoading}>
           <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -139,7 +96,9 @@ export default function Dashboard() {
           {isLoading ? (
             <div className="py-8 text-center text-muted-foreground">Loading...</div>
           ) : error ? (
-            <div className="py-8 text-center text-destructive">{error}</div>
+            <div className="py-8 text-center text-destructive">
+              {error instanceof Error ? error.message : 'Failed to load URLs'}
+            </div>
           ) : urls.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               <Link2 className="mx-auto mb-4 h-12 w-12 opacity-50" />
@@ -208,11 +167,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-function getCookie(name: string): string | null {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-  return null;
-}
-
