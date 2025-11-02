@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>URL Shortener</title>
+  <meta name="description" content="URL Shortener Service" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="#" />
+</head>
+<body>
+  <script>
+    // Mock Django context variables for standalone development
+    window.SENTRY_DSN = "";
+    window.COMMIT_SHA = "";
+    window.Urls = {
+      commonCurrentUser: () => '/api/auth/user/',
+    };
+  </script>
+  <div id="react-app"></div>
+</body>
+</html>
+

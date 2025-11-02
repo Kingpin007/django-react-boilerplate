@@ -4,113 +4,138 @@ export type ClientOptions = {
     baseURL: `${string}://${string}` | (string & {});
 };
 
-export type Message = {
-    message: string;
-};
-
-export type PaginatedUserList = {
+export type PaginatedShortUrlList = {
     count: number;
     next?: string | null;
     previous?: string | null;
-    results: Array<User>;
+    results: Array<ShortUrl>;
 };
 
-export type PatchedUser = {
+/**
+ * Serializer for ShortURL model.
+ */
+export type PatchedShortUrl = {
     readonly id?: number;
-    email?: string;
+    original_url?: string;
     /**
-     * Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+     * Unique short code for the URL
      */
+    readonly short_code?: string;
+    readonly short_url?: string;
+    /**
+     * User who created this short URL (optional)
+     */
+    user?: number | null;
+    readonly user_email?: string;
+    readonly click_count?: number;
     is_active?: boolean;
     /**
-     * Designates whether the user can log into this admin site.
+     * Optional expiration date for the short URL
      */
-    is_staff?: boolean;
-    /**
-     * Superuser status
-     *
-     * Designates that this user has all permissions without explicitly assigning them.
-     */
-    is_superuser?: boolean;
+    expires_at?: string | null;
     readonly created?: string;
     readonly modified?: string;
-    last_login?: string | null;
 };
 
-export type User = {
+/**
+ * Serializer for ShortURL model.
+ */
+export type ShortUrl = {
     readonly id: number;
-    email: string;
+    original_url: string;
     /**
-     * Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+     * Unique short code for the URL
      */
+    readonly short_code: string;
+    readonly short_url: string;
+    /**
+     * User who created this short URL (optional)
+     */
+    user?: number | null;
+    readonly user_email: string;
+    readonly click_count: number;
     is_active?: boolean;
     /**
-     * Designates whether the user can log into this admin site.
+     * Optional expiration date for the short URL
      */
-    is_staff?: boolean;
-    /**
-     * Superuser status
-     *
-     * Designates that this user has all permissions without explicitly assigning them.
-     */
-    is_superuser?: boolean;
+    expires_at?: string | null;
     readonly created: string;
     readonly modified: string;
-    last_login?: string | null;
 };
 
-export type PatchedUserWritable = {
-    email?: string;
+/**
+ * Serializer for creating short URLs.
+ */
+export type ShortUrlCreate = {
+    original_url: string;
     /**
-     * Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+     * Optional custom short code (must be unique)
      */
+    custom_code?: string;
+    expires_at?: string | null;
+};
+
+/**
+ * Serializer for ShortURL model.
+ */
+export type PatchedShortUrlWritable = {
+    original_url?: string;
+    /**
+     * User who created this short URL (optional)
+     */
+    user?: number | null;
     is_active?: boolean;
     /**
-     * Designates whether the user can log into this admin site.
+     * Optional expiration date for the short URL
      */
-    is_staff?: boolean;
-    /**
-     * Superuser status
-     *
-     * Designates that this user has all permissions without explicitly assigning them.
-     */
-    is_superuser?: boolean;
-    last_login?: string | null;
+    expires_at?: string | null;
 };
 
-export type UserWritable = {
-    email: string;
+/**
+ * Serializer for ShortURL model.
+ */
+export type ShortUrlWritable = {
+    original_url: string;
     /**
-     * Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+     * User who created this short URL (optional)
      */
+    user?: number | null;
     is_active?: boolean;
     /**
-     * Designates whether the user can log into this admin site.
+     * Optional expiration date for the short URL
      */
-    is_staff?: boolean;
-    /**
-     * Superuser status
-     *
-     * Designates that this user has all permissions without explicitly assigning them.
-     */
-    is_superuser?: boolean;
-    last_login?: string | null;
+    expires_at?: string | null;
 };
 
-export type RestRestCheckRetrieveData = {
+export type AuthUserRetrieveData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/rest/rest-check/';
+    url: '/api/auth/user/';
 };
 
-export type RestRestCheckRetrieveResponses = {
-    200: Message;
+export type AuthUserRetrieveResponses = {
+    /**
+     * No response body
+     */
+    200: unknown;
 };
 
-export type RestRestCheckRetrieveResponse = RestRestCheckRetrieveResponses[keyof RestRestCheckRetrieveResponses];
+export type RestRetrieveData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/rest/';
+};
 
-export type UsersListData = {
+export type RestRetrieveResponses = {
+    /**
+     * No response body
+     */
+    200: unknown;
+};
+
+export type ShortUrlsListData = {
     body?: never;
     path?: never;
     query?: {
@@ -123,99 +148,130 @@ export type UsersListData = {
          */
         offset?: number;
     };
-    url: '/api/users/';
+    url: '/api/short-urls/';
 };
 
-export type UsersListResponses = {
-    200: PaginatedUserList;
+export type ShortUrlsListResponses = {
+    200: PaginatedShortUrlList;
 };
 
-export type UsersListResponse = UsersListResponses[keyof UsersListResponses];
+export type ShortUrlsListResponse = ShortUrlsListResponses[keyof ShortUrlsListResponses];
 
-export type UsersCreateData = {
-    body: UserWritable;
+export type ShortUrlsCreateData = {
+    body: ShortUrlCreate;
     path?: never;
     query?: never;
-    url: '/api/users/';
+    url: '/api/short-urls/';
 };
 
-export type UsersCreateResponses = {
-    201: User;
+export type ShortUrlsCreateResponses = {
+    201: ShortUrlCreate;
 };
 
-export type UsersCreateResponse = UsersCreateResponses[keyof UsersCreateResponses];
+export type ShortUrlsCreateResponse = ShortUrlsCreateResponses[keyof ShortUrlsCreateResponses];
 
-export type UsersDestroyData = {
+export type ShortUrlsDestroyData = {
     body?: never;
     path: {
         /**
-         * A unique integer value identifying this user.
+         * A unique integer value identifying this Short URL.
          */
         id: number;
     };
     query?: never;
-    url: '/api/users/{id}/';
+    url: '/api/short-urls/{id}/';
 };
 
-export type UsersDestroyResponses = {
+export type ShortUrlsDestroyResponses = {
     /**
      * No response body
      */
     204: void;
 };
 
-export type UsersDestroyResponse = UsersDestroyResponses[keyof UsersDestroyResponses];
+export type ShortUrlsDestroyResponse = ShortUrlsDestroyResponses[keyof ShortUrlsDestroyResponses];
 
-export type UsersRetrieveData = {
+export type ShortUrlsRetrieveData = {
     body?: never;
     path: {
         /**
-         * A unique integer value identifying this user.
+         * A unique integer value identifying this Short URL.
          */
         id: number;
     };
     query?: never;
-    url: '/api/users/{id}/';
+    url: '/api/short-urls/{id}/';
 };
 
-export type UsersRetrieveResponses = {
-    200: User;
+export type ShortUrlsRetrieveResponses = {
+    200: ShortUrl;
 };
 
-export type UsersRetrieveResponse = UsersRetrieveResponses[keyof UsersRetrieveResponses];
+export type ShortUrlsRetrieveResponse = ShortUrlsRetrieveResponses[keyof ShortUrlsRetrieveResponses];
 
-export type UsersPartialUpdateData = {
-    body?: PatchedUserWritable;
+export type ShortUrlsPartialUpdateData = {
+    body?: PatchedShortUrlWritable;
     path: {
         /**
-         * A unique integer value identifying this user.
+         * A unique integer value identifying this Short URL.
          */
         id: number;
     };
     query?: never;
-    url: '/api/users/{id}/';
+    url: '/api/short-urls/{id}/';
 };
 
-export type UsersPartialUpdateResponses = {
-    200: User;
+export type ShortUrlsPartialUpdateResponses = {
+    200: ShortUrl;
 };
 
-export type UsersPartialUpdateResponse = UsersPartialUpdateResponses[keyof UsersPartialUpdateResponses];
+export type ShortUrlsPartialUpdateResponse = ShortUrlsPartialUpdateResponses[keyof ShortUrlsPartialUpdateResponses];
 
-export type UsersUpdateData = {
-    body: UserWritable;
+export type ShortUrlsUpdateData = {
+    body: ShortUrlWritable;
     path: {
         /**
-         * A unique integer value identifying this user.
+         * A unique integer value identifying this Short URL.
          */
         id: number;
     };
     query?: never;
-    url: '/api/users/{id}/';
+    url: '/api/short-urls/{id}/';
 };
 
-export type UsersUpdateResponses = {
-    200: User;
+export type ShortUrlsUpdateResponses = {
+    200: ShortUrl;
 };
 
-export type UsersUpdateResponse = UsersUpdateResponses[keyof UsersUpdateResponses];
+export type ShortUrlsUpdateResponse = ShortUrlsUpdateResponses[keyof ShortUrlsUpdateResponses];
+
+export type ShortUrlsStatsRetrieveData = {
+    body?: never;
+    path: {
+        /**
+         * A unique integer value identifying this Short URL.
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/api/short-urls/{id}/stats/';
+};
+
+export type ShortUrlsStatsRetrieveResponses = {
+    200: ShortUrl;
+};
+
+export type ShortUrlsStatsRetrieveResponse = ShortUrlsStatsRetrieveResponses[keyof ShortUrlsStatsRetrieveResponses];
+
+export type ShortUrlsShortenCreateData = {
+    body: ShortUrlWritable;
+    path?: never;
+    query?: never;
+    url: '/api/short-urls/shorten/';
+};
+
+export type ShortUrlsShortenCreateResponses = {
+    200: ShortUrl;
+};
+
+export type ShortUrlsShortenCreateResponse = ShortUrlsShortenCreateResponses[keyof ShortUrlsShortenCreateResponses];

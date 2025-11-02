@@ -1,48 +1,36 @@
-from django.views import generic
-
-from drf_spectacular.utils import OpenApiExample, extend_schema
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from django.views.generic import TemplateView
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import MessageSerializer
 
-
-class IndexView(generic.TemplateView):
+class IndexView(TemplateView):
+    """Main index view that renders the React app."""
     template_name = "common/index.html"
 
 
 class RestViewSet(viewsets.ViewSet):
-    serializer_class = MessageSerializer
+    """Basic REST viewset for testing."""
 
-    @extend_schema(
-        summary="Check REST API",
-        description="This endpoint checks if the REST API is working.",
-        examples=[
-            OpenApiExample(
-                "Successful Response",
-                value={
-                    "message": "This message comes from the backend. "
-                    "If you're seeing this, the REST API is working!"
-                },
-                response_only=True,
-            )
-        ],
-        methods=["GET"],
-    )
-    @action(
-        detail=False,
-        methods=["get"],
-        permission_classes=[AllowAny],
-        url_path="rest-check",
-    )
-    def rest_check(self, request):
-        serializer = self.serializer_class(
-            data={
-                "message": "This message comes from the backend. "
-                "If you're seeing this, the REST API is working!"
-            }
-        )
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def list(self, request):
+        return Response({"message": "Hello from Django REST API!"})
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def rest_view(request):
+    """Basic REST view for testing."""
+    return Response({"message": "Hello from Django REST API!"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def current_user_view(request):
+    """Get current authenticated user info."""
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+    })

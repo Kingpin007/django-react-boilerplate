@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { RestRestCheckRetrieveData, RestRestCheckRetrieveResponses, UsersCreateData, UsersCreateResponses, UsersDestroyData, UsersDestroyResponses, UsersListData, UsersListResponses, UsersPartialUpdateData, UsersPartialUpdateResponses, UsersRetrieveData, UsersRetrieveResponses, UsersUpdateData, UsersUpdateResponses } from './types.gen';
+import type { AuthUserRetrieveData, AuthUserRetrieveResponses, RestRetrieveData, RestRetrieveResponses, ShortUrlsCreateData, ShortUrlsCreateResponses, ShortUrlsDestroyData, ShortUrlsDestroyResponses, ShortUrlsListData, ShortUrlsListResponses, ShortUrlsPartialUpdateData, ShortUrlsPartialUpdateResponses, ShortUrlsRetrieveData, ShortUrlsRetrieveResponses, ShortUrlsShortenCreateData, ShortUrlsShortenCreateResponses, ShortUrlsStatsRetrieveData, ShortUrlsStatsRetrieveResponses, ShortUrlsUpdateData, ShortUrlsUpdateResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -19,13 +19,10 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Check REST API
- *
- * This endpoint checks if the REST API is working.
+ * Get current authenticated user info.
  */
-export const restRestCheckRetrieve = <ThrowOnError extends boolean = false>(options?: Options<RestRestCheckRetrieveData, ThrowOnError>) => {
-    return (options?.client ?? client).get<RestRestCheckRetrieveResponses, unknown, ThrowOnError>({
-        responseType: 'json',
+export const authUserRetrieve = <ThrowOnError extends boolean = false>(options?: Options<AuthUserRetrieveData, ThrowOnError>) => {
+    return (options?.client ?? client).get<AuthUserRetrieveResponses, unknown, ThrowOnError>({
         security: [
             {
                 in: 'cookie',
@@ -33,14 +30,16 @@ export const restRestCheckRetrieve = <ThrowOnError extends boolean = false>(opti
                 type: 'apiKey'
             }
         ],
-        url: '/api/rest/rest-check/',
+        url: '/api/auth/user/',
         ...options
     });
 };
 
-export const usersList = <ThrowOnError extends boolean = false>(options?: Options<UsersListData, ThrowOnError>) => {
-    return (options?.client ?? client).get<UsersListResponses, unknown, ThrowOnError>({
-        responseType: 'json',
+/**
+ * Basic REST viewset for testing.
+ */
+export const restRetrieve = <ThrowOnError extends boolean = false>(options?: Options<RestRetrieveData, ThrowOnError>) => {
+    return (options?.client ?? client).get<RestRetrieveResponses, unknown, ThrowOnError>({
         security: [
             {
                 in: 'cookie',
@@ -48,13 +47,16 @@ export const usersList = <ThrowOnError extends boolean = false>(options?: Option
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/',
+        url: '/api/rest/',
         ...options
     });
 };
 
-export const usersCreate = <ThrowOnError extends boolean = false>(options: Options<UsersCreateData, ThrowOnError>) => {
-    return (options.client ?? client).post<UsersCreateResponses, unknown, ThrowOnError>({
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsList = <ThrowOnError extends boolean = false>(options?: Options<ShortUrlsListData, ThrowOnError>) => {
+    return (options?.client ?? client).get<ShortUrlsListResponses, unknown, ThrowOnError>({
         responseType: 'json',
         security: [
             {
@@ -63,7 +65,25 @@ export const usersCreate = <ThrowOnError extends boolean = false>(options: Optio
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/',
+        url: '/api/short-urls/',
+        ...options
+    });
+};
+
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsCreate = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsCreateData, ThrowOnError>) => {
+    return (options.client ?? client).post<ShortUrlsCreateResponses, unknown, ThrowOnError>({
+        responseType: 'json',
+        security: [
+            {
+                in: 'cookie',
+                name: 'sessionid',
+                type: 'apiKey'
+            }
+        ],
+        url: '/api/short-urls/',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -72,8 +92,11 @@ export const usersCreate = <ThrowOnError extends boolean = false>(options: Optio
     });
 };
 
-export const usersDestroy = <ThrowOnError extends boolean = false>(options: Options<UsersDestroyData, ThrowOnError>) => {
-    return (options.client ?? client).delete<UsersDestroyResponses, unknown, ThrowOnError>({
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsDestroy = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsDestroyData, ThrowOnError>) => {
+    return (options.client ?? client).delete<ShortUrlsDestroyResponses, unknown, ThrowOnError>({
         security: [
             {
                 in: 'cookie',
@@ -81,13 +104,16 @@ export const usersDestroy = <ThrowOnError extends boolean = false>(options: Opti
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/{id}/',
+        url: '/api/short-urls/{id}/',
         ...options
     });
 };
 
-export const usersRetrieve = <ThrowOnError extends boolean = false>(options: Options<UsersRetrieveData, ThrowOnError>) => {
-    return (options.client ?? client).get<UsersRetrieveResponses, unknown, ThrowOnError>({
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsRetrieve = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsRetrieveData, ThrowOnError>) => {
+    return (options.client ?? client).get<ShortUrlsRetrieveResponses, unknown, ThrowOnError>({
         responseType: 'json',
         security: [
             {
@@ -96,13 +122,16 @@ export const usersRetrieve = <ThrowOnError extends boolean = false>(options: Opt
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/{id}/',
+        url: '/api/short-urls/{id}/',
         ...options
     });
 };
 
-export const usersPartialUpdate = <ThrowOnError extends boolean = false>(options: Options<UsersPartialUpdateData, ThrowOnError>) => {
-    return (options.client ?? client).patch<UsersPartialUpdateResponses, unknown, ThrowOnError>({
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsPartialUpdate = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsPartialUpdateData, ThrowOnError>) => {
+    return (options.client ?? client).patch<ShortUrlsPartialUpdateResponses, unknown, ThrowOnError>({
         responseType: 'json',
         security: [
             {
@@ -111,7 +140,7 @@ export const usersPartialUpdate = <ThrowOnError extends boolean = false>(options
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/{id}/',
+        url: '/api/short-urls/{id}/',
         ...options,
         headers: {
             'Content-Type': 'application/json',
@@ -120,8 +149,11 @@ export const usersPartialUpdate = <ThrowOnError extends boolean = false>(options
     });
 };
 
-export const usersUpdate = <ThrowOnError extends boolean = false>(options: Options<UsersUpdateData, ThrowOnError>) => {
-    return (options.client ?? client).put<UsersUpdateResponses, unknown, ThrowOnError>({
+/**
+ * ViewSet for ShortURL operations.
+ */
+export const shortUrlsUpdate = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsUpdateData, ThrowOnError>) => {
+    return (options.client ?? client).put<ShortUrlsUpdateResponses, unknown, ThrowOnError>({
         responseType: 'json',
         security: [
             {
@@ -130,7 +162,47 @@ export const usersUpdate = <ThrowOnError extends boolean = false>(options: Optio
                 type: 'apiKey'
             }
         ],
-        url: '/api/users/{id}/',
+        url: '/api/short-urls/{id}/',
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+        }
+    });
+};
+
+/**
+ * Get statistics for a short URL.
+ */
+export const shortUrlsStatsRetrieve = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsStatsRetrieveData, ThrowOnError>) => {
+    return (options.client ?? client).get<ShortUrlsStatsRetrieveResponses, unknown, ThrowOnError>({
+        responseType: 'json',
+        security: [
+            {
+                in: 'cookie',
+                name: 'sessionid',
+                type: 'apiKey'
+            }
+        ],
+        url: '/api/short-urls/{id}/stats/',
+        ...options
+    });
+};
+
+/**
+ * Public endpoint to create short URLs.
+ */
+export const shortUrlsShortenCreate = <ThrowOnError extends boolean = false>(options: Options<ShortUrlsShortenCreateData, ThrowOnError>) => {
+    return (options.client ?? client).post<ShortUrlsShortenCreateResponses, unknown, ThrowOnError>({
+        responseType: 'json',
+        security: [
+            {
+                in: 'cookie',
+                name: 'sessionid',
+                type: 'apiKey'
+            }
+        ],
+        url: '/api/short-urls/shorten/',
         ...options,
         headers: {
             'Content-Type': 'application/json',

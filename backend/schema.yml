@@ -4,32 +4,32 @@ info:
   version: 0.1.0
   description: A Django project boilerplate with Vinta's best practices
 paths:
-  /api/rest/rest-check/:
+  /api/auth/user/:
     get:
-      operationId: rest_rest_check_retrieve
-      description: This endpoint checks if the REST API is working.
-      summary: Check REST API
+      operationId: auth_user_retrieve
+      description: Get current authenticated user info.
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/rest/:
+    get:
+      operationId: rest_retrieve
+      description: Basic REST viewset for testing.
       tags:
       - rest
       security:
       - cookieAuth: []
-      - {}
       responses:
         '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Message'
-              examples:
-                SuccessfulResponse:
-                  value:
-                    message: This message comes from the backend. If you're seeing
-                      this, the REST API is working!
-                  summary: Successful Response
-          description: ''
-  /api/users/:
+          description: No response body
+  /api/short-urls/:
     get:
-      operationId: users_list
+      operationId: short_urls_list
+      description: ViewSet for ShortURL operations.
       parameters:
       - name: limit
         required: false
@@ -44,7 +44,7 @@ paths:
         schema:
           type: integer
       tags:
-      - users
+      - short-urls
       security:
       - cookieAuth: []
       responses:
@@ -52,45 +52,48 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedUserList'
+                $ref: '#/components/schemas/PaginatedShortURLList'
           description: ''
     post:
-      operationId: users_create
+      operationId: short_urls_create
+      description: ViewSet for ShortURL operations.
       tags:
-      - users
+      - short-urls
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURLCreate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURLCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURLCreate'
         required: true
       security:
       - cookieAuth: []
+      - {}
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/ShortURLCreate'
           description: ''
-  /api/users/{id}/:
+  /api/short-urls/{id}/:
     get:
-      operationId: users_retrieve
+      operationId: short_urls_retrieve
+      description: ViewSet for ShortURL operations.
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this user.
+        description: A unique integer value identifying this Short URL.
         required: true
       tags:
-      - users
+      - short-urls
       security:
       - cookieAuth: []
       responses:
@@ -98,30 +101,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/ShortURL'
           description: ''
     put:
-      operationId: users_update
+      operationId: short_urls_update
+      description: ViewSet for ShortURL operations.
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this user.
+        description: A unique integer value identifying this Short URL.
         required: true
       tags:
-      - users
+      - short-urls
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURL'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURL'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/ShortURL'
         required: true
       security:
       - cookieAuth: []
@@ -130,30 +134,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/ShortURL'
           description: ''
     patch:
-      operationId: users_partial_update
+      operationId: short_urls_partial_update
+      description: ViewSet for ShortURL operations.
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this user.
+        description: A unique integer value identifying this Short URL.
         required: true
       tags:
-      - users
+      - short-urls
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedUser'
+              $ref: '#/components/schemas/PatchedShortURL'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedUser'
+              $ref: '#/components/schemas/PatchedShortURL'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedUser'
+              $ref: '#/components/schemas/PatchedShortURL'
       security:
       - cookieAuth: []
       responses:
@@ -161,34 +166,79 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/ShortURL'
           description: ''
     delete:
-      operationId: users_destroy
+      operationId: short_urls_destroy
+      description: ViewSet for ShortURL operations.
       parameters:
       - in: path
         name: id
         schema:
           type: integer
-        description: A unique integer value identifying this user.
+        description: A unique integer value identifying this Short URL.
         required: true
       tags:
-      - users
+      - short-urls
       security:
       - cookieAuth: []
       responses:
         '204':
           description: No response body
+  /api/short-urls/{id}/stats/:
+    get:
+      operationId: short_urls_stats_retrieve
+      description: Get statistics for a short URL.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Short URL.
+        required: true
+      tags:
+      - short-urls
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortURL'
+          description: ''
+  /api/short-urls/shorten/:
+    post:
+      operationId: short_urls_shorten_create
+      description: Public endpoint to create short URLs.
+      tags:
+      - short-urls
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShortURL'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShortURL'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShortURL'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShortURL'
+          description: ''
 components:
   schemas:
-    Message:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-      - message
-    PaginatedUserList:
+    PaginatedShortURLList:
       type: object
       required:
       - count
@@ -210,63 +260,43 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/User'
-    PatchedUser:
+            $ref: '#/components/schemas/ShortURL'
+    PatchedShortURL:
       type: object
+      description: Serializer for ShortURL model.
       properties:
         id:
           type: integer
           readOnly: true
-        email:
+        original_url:
+          type: string
+          format: uri
+          maxLength: 2048
+        short_code:
+          type: string
+          readOnly: true
+          description: Unique short code for the URL
+        short_url:
+          type: string
+          readOnly: true
+        user:
+          type: integer
+          nullable: true
+          description: User who created this short URL (optional)
+        user_email:
           type: string
           format: email
-          maxLength: 255
+          readOnly: true
+        click_count:
+          type: integer
+          readOnly: true
         is_active:
           type: boolean
-          description: Designates whether this user should be treated as active. Unselect
-            this instead of deleting accounts.
-        is_staff:
-          type: boolean
-          description: Designates whether the user can log into this admin site.
-        is_superuser:
-          type: boolean
-          title: Superuser status
-          description: Designates that this user has all permissions without explicitly
-            assigning them.
-        created:
-          type: string
-          format: date-time
-          readOnly: true
-        modified:
-          type: string
-          format: date-time
-          readOnly: true
-        last_login:
+        expires_at:
           type: string
           format: date-time
           nullable: true
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        email:
-          type: string
-          format: email
-          maxLength: 255
-        is_active:
-          type: boolean
-          description: Designates whether this user should be treated as active. Unselect
-            this instead of deleting accounts.
-        is_staff:
-          type: boolean
-          description: Designates whether the user can log into this admin site.
-        is_superuser:
-          type: boolean
-          title: Superuser status
-          description: Designates that this user has all permissions without explicitly
-            assigning them.
+          description: Optional expiration date for the short URL
         created:
           type: string
           format: date-time
@@ -275,15 +305,76 @@ components:
           type: string
           format: date-time
           readOnly: true
-        last_login:
+    ShortURL:
+      type: object
+      description: Serializer for ShortURL model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        original_url:
+          type: string
+          format: uri
+          maxLength: 2048
+        short_code:
+          type: string
+          readOnly: true
+          description: Unique short code for the URL
+        short_url:
+          type: string
+          readOnly: true
+        user:
+          type: integer
+          nullable: true
+          description: User who created this short URL (optional)
+        user_email:
+          type: string
+          format: email
+          readOnly: true
+        click_count:
+          type: integer
+          readOnly: true
+        is_active:
+          type: boolean
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional expiration date for the short URL
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - click_count
+      - created
+      - id
+      - modified
+      - original_url
+      - short_code
+      - short_url
+      - user_email
+    ShortURLCreate:
+      type: object
+      description: Serializer for creating short URLs.
+      properties:
+        original_url:
+          type: string
+          format: uri
+        custom_code:
+          type: string
+          description: Optional custom short code (must be unique)
+          maxLength: 20
+        expires_at:
           type: string
           format: date-time
           nullable: true
       required:
-      - created
-      - email
-      - id
-      - modified
+      - original_url
   securitySchemes:
     cookieAuth:
       type: apiKey
